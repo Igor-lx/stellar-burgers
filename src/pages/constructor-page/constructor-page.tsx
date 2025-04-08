@@ -1,4 +1,4 @@
-import { useSelector } from '../../services/store';
+import { useAppSelector } from 'src/store/hooks';
 
 import styles from './constructor-page.module.css';
 
