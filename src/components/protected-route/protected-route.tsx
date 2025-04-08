@@ -1,10 +1,7 @@
 import { useAppSelector } from '../../store/hooks';
 import { Navigate, useLocation } from 'react-router-dom';
+import { selectReady, selectUserData } from '../../store/slices/userSlice';
 import { Preloader } from '../ui/preloader';
-import {
-  selectIfUserAuthenticated,
-  selectUserInfo
-} from '../../store/slices/userSlice';
 
 type ProtectedRouteProps = {
   protectedRoute?: boolean;
@@ -16,18 +13,18 @@ export const ProtectedRoute = ({
   protectedRoute
 }: ProtectedRouteProps) => {
   const location = useLocation();
-  const ifUserAuthenticated = useAppSelector(selectIfUserAuthenticated); // Селектор
-  const userInfo = useAppSelector(selectUserInfo); // Селектор
+  const isAuthChecked = useAppSelector(selectReady);
+  const user = useAppSelector(selectUserData);
 
-  if (!ifUserAuthenticated) {
+  if (!isAuthChecked) {
     return <Preloader />;
   }
 
-  if (protectedRoute && !userInfo) {
+  if (protectedRoute && !user) {
     return (
       <Navigate
         replace
-        to={'/login'}
+        to='/login'
         state={{
           from: {
             ...location,
@@ -39,10 +36,14 @@ export const ProtectedRoute = ({
     );
   }
 
-  if (!protectedRoute && userInfo) {
-    const from = location.state?.from || { pathname: '/' };
-    const background = location.state?.from?.background || null;
-    return <Navigate replace to={from} state={{ background }} />;
+  if (!protectedRoute && user) {
+    return (
+      <Navigate
+        replace
+        to={location.state?.from || '/'}
+        state={{ background: location.state?.from?.background || null }}
+      />
+    );
   }
 
   return children;
