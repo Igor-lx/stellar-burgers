@@ -13,15 +13,15 @@ export const fetchFeed = createAsyncThunk<TOrdersData>(
 
 export const fetchOrderByNumber = createAsyncThunk<TOrder, number>(
   'feed/fetchOrderByNumber',
-  async (number, { rejectWithValue }) => {
+  async (number) => {
     try {
       const result = await getOrderByNumberApi(number);
       if (!result.orders || !result.orders.length) {
-        return rejectWithValue('Заказ не найден');
+        throw new Error('Заказ не найден');
       }
       return result.orders[0];
     } catch (error) {
-      return rejectWithValue('Ошибка при загрузке заказа');
+      throw new Error('Ошибка при загрузке заказа');
     }
   }
 );
@@ -30,7 +30,6 @@ interface IFeedState {
   fetchStatus: 'idle' | 'loading' | 'succeeded' | 'failed';
   feedData: TOrdersData;
   orderByNumber: TOrder | null;
-  error: string | null;
 }
 
 const initialState: IFeedState = {
@@ -40,8 +39,7 @@ const initialState: IFeedState = {
     total: 0,
     totalToday: 0
   },
-  orderByNumber: null,
-  error: null
+  orderByNumber: null
 };
 
 export const feedSlice = createSlice({
@@ -52,18 +50,15 @@ export const feedSlice = createSlice({
     selectFeedData: (state: IFeedState) => state.feedData,
     selectOrdersFromFeed: (state: IFeedState) => state.feedData.orders,
     selectFeedStatus: (state: IFeedState) => state.fetchStatus,
-    selectFeedOrderByNumber: (state: IFeedState) => state.orderByNumber,
-    selectFeedError: (state: IFeedState) => state.error
+    selectFeedOrderByNumber: (state: IFeedState) => state.orderByNumber
   },
   extraReducers: (builder) => {
     builder
       .addCase(fetchFeed.pending, (state) => {
         state.fetchStatus = 'loading';
-        state.error = null;
       })
-      .addCase(fetchFeed.rejected, (state, action) => {
+      .addCase(fetchFeed.rejected, (state) => {
         state.fetchStatus = 'failed';
-        state.error = action.error.message ?? 'Ошибка загрузки ленты';
         state.feedData = { orders: [], total: 0, totalToday: 0 };
       })
       .addCase(
@@ -71,18 +66,14 @@ export const feedSlice = createSlice({
         (state, action: PayloadAction<TOrdersData>) => {
           state.fetchStatus = 'succeeded';
           state.feedData = action.payload;
-          state.error = null;
         }
       )
-
       .addCase(fetchOrderByNumber.pending, (state) => {
         state.fetchStatus = 'loading';
-        state.error = null;
         state.orderByNumber = null;
       })
-      .addCase(fetchOrderByNumber.rejected, (state, action) => {
+      .addCase(fetchOrderByNumber.rejected, (state) => {
         state.fetchStatus = 'failed';
-        state.error = (action.payload as string) || 'Ошибка загрузки заказа';
         state.orderByNumber = null;
       })
       .addCase(
@@ -90,7 +81,6 @@ export const feedSlice = createSlice({
         (state, action: PayloadAction<TOrder>) => {
           state.fetchStatus = 'succeeded';
           state.orderByNumber = action.payload;
-          state.error = null;
         }
       );
   }
@@ -100,8 +90,7 @@ export const {
   selectFeedData,
   selectOrdersFromFeed,
   selectFeedStatus,
-  selectFeedOrderByNumber,
-  selectFeedError
+  selectFeedOrderByNumber
 } = feedSlice.selectors;
 
 export default feedSlice;
