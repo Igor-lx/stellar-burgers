@@ -2,7 +2,7 @@ import { BurgerConstructorUI } from '@ui';
 import { FC, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { selectConstructorItems } from '../../store/slices/burgerConstructorSlice';
+import { selectBurgerConstructorItems } from '../../store/slices/burgerConstructorSlice';
 import {
   selectOrderLoading,
   selectOrder,
@@ -15,7 +15,7 @@ export const BurgerConstructor: FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  const constructorItems = useAppSelector(selectConstructorItems);
+  const constructorItems = useAppSelector(selectBurgerConstructorItems);
   const orderRequest = useAppSelector(selectOrderLoading);
   const orderModalData = useAppSelector(selectOrder);
   const user = useAppSelector(selectUserData);
