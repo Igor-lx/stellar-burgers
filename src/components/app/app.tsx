@@ -1,19 +1,11 @@
 import { FC, useEffect } from 'react';
 import {
-  Routes,
-  Route,
-  useLocation,
   useNavigate,
-  useMatch
+  useLocation,
+  useMatch,
+  Routes,
+  Route
 } from 'react-router-dom';
-import { AppHeader } from '../app-header';
-import { IngredientDetails } from '../ingredient-details';
-import { Modal } from '../modal';
-import { OrderInfo } from '../order-info';
-import { ProtectedRoute } from '../protected-route';
-import { useAppDispatch } from '../../store/hooks';
-import { fetchIngredients } from '../../store/slices/burgerIngredientsSlice';
-import { fetchUser } from '../../store/slices/userSlice';
 import {
   ConstructorPage,
   Feed,
@@ -24,8 +16,15 @@ import {
   Profile,
   ProfileOrders,
   NotFound404
-} from '@pages';
-import styles from './app.module.css';
+} from '../../pages';
+import { useAppDispatch } from '../../store/hooks';
+import { fetchIngredients } from '../../store/slices/burgerIngredientsSlice';
+import { fetchUser } from '../../store/slices/userSlice';
+import { AppHeader } from '../app-header';
+import { IngredientDetails } from '../ingredient-details';
+import { Modal } from '../modal';
+import { OrderInfo } from '../order-info';
+import { ProtectedRoute } from '../protected-route';
 
 const App: FC = () => {
   const dispatch = useAppDispatch();
@@ -46,7 +45,7 @@ const App: FC = () => {
   const closeModal = () => navigate(-1);
 
   return (
-    <div className={styles.app}>
+    <div className='app'>
       <AppHeader />
       <Routes location={background || location}>
         <Route path='/' element={<ConstructorPage />} />
@@ -54,10 +53,8 @@ const App: FC = () => {
         <Route
           path='/feed/:number'
           element={
-            <div className={styles.detailPageWrap}>
-              <p
-                className={`text text_type_digits-default ${styles.detailHeader}`}
-              >
+            <div className='detailPageWrap'>
+              <p className={`text text_type_digits-default detailHeader`}>
                 {`#${orderNumber?.padStart(6, '0')}`}
               </p>
               <OrderInfo />
@@ -67,7 +64,7 @@ const App: FC = () => {
         <Route
           path='/login'
           element={
-            <ProtectedRoute protectedRoute={false}>
+            <ProtectedRoute publicRoute>
               <Login />
             </ProtectedRoute>
           }
@@ -75,7 +72,7 @@ const App: FC = () => {
         <Route
           path='/register'
           element={
-            <ProtectedRoute protectedRoute={false}>
+            <ProtectedRoute publicRoute>
               <Register />
             </ProtectedRoute>
           }
@@ -83,7 +80,7 @@ const App: FC = () => {
         <Route
           path='/forgot-password'
           element={
-            <ProtectedRoute protectedRoute={false}>
+            <ProtectedRoute publicRoute>
               <ForgotPassword />
             </ProtectedRoute>
           }
@@ -91,7 +88,7 @@ const App: FC = () => {
         <Route
           path='/reset-password'
           element={
-            <ProtectedRoute protectedRoute={false}>
+            <ProtectedRoute publicRoute>
               <ResetPassword />
             </ProtectedRoute>
           }
@@ -99,7 +96,7 @@ const App: FC = () => {
         <Route
           path='/profile'
           element={
-            <ProtectedRoute protectedRoute>
+            <ProtectedRoute>
               <Profile />
             </ProtectedRoute>
           }
@@ -107,7 +104,7 @@ const App: FC = () => {
         <Route
           path='/profile/orders'
           element={
-            <ProtectedRoute protectedRoute>
+            <ProtectedRoute>
               <ProfileOrders />
             </ProtectedRoute>
           }
@@ -115,11 +112,9 @@ const App: FC = () => {
         <Route
           path='/profile/orders/:number'
           element={
-            <ProtectedRoute protectedRoute>
-              <div className={styles.detailPageWrap}>
-                <p
-                  className={`text text_type_digits-default ${styles.detailHeader}`}
-                >
+            <ProtectedRoute>
+              <div className='detailPageWrap'>
+                <p className={`text text_type_digits-default detailHeader`}>
                   {`#${orderNumber?.padStart(6, '0')}`}
                 </p>
                 <OrderInfo />
@@ -130,8 +125,8 @@ const App: FC = () => {
         <Route
           path='/ingredients/:id'
           element={
-            <div className={styles.detailPageWrap}>
-              <p className={`text text_type_main-large ${styles.detailHeader}`}>
+            <div className='detailPageWrap'>
+              <p className={`text text_type_main-large detailHeader`}>
                 Детали ингредиента
               </p>
               <IngredientDetails />
@@ -165,7 +160,7 @@ const App: FC = () => {
           <Route
             path='/profile/orders/:number'
             element={
-              <ProtectedRoute protectedRoute>
+              <ProtectedRoute>
                 <Modal
                   title={`#${orderNumber?.padStart(6, '0')}`}
                   onClose={closeModal}

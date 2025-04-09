@@ -12,13 +12,13 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { TUser } from '@utils-types';
 
 type UserState = {
-  ready: boolean;
+  ifAuth: boolean;
   loading: boolean;
   userData: TUser | null;
 };
 
 const initialState: UserState = {
-  ready: false,
+  ifAuth: false,
   loading: false,
   userData: null
 };
@@ -53,19 +53,19 @@ export const userSlice = createSlice({
   initialState,
   reducers: {},
   selectors: {
-    selectUserData: (s: UserState) => s.userData,
-    selectReady: (s: UserState) => s.ready,
-    selectUserName: (s: UserState) => s.userData?.name || ''
+    selectUserData: (state: UserState) => state.userData,
+    selectIfAuth: (state: UserState) => state.ifAuth,
+    selectUserName: (state: UserState) => state.userData?.name || ''
   },
   extraReducers: (builder) => {
     const onPending = (state: UserState) => {
       state.loading = true;
-      state.ready = false;
+      state.ifAuth = false;
     };
 
     const onRejected = (state: UserState) => {
       state.loading = false;
-      state.ready = true;
+      state.ifAuth = true;
     };
 
     const onSuccess = (
@@ -73,14 +73,14 @@ export const userSlice = createSlice({
       action: PayloadAction<TUserResponse>
     ) => {
       state.loading = false;
-      state.ready = true;
+      state.ifAuth = true;
       state.userData = action.payload.user;
     };
 
     const onSignOutSuccess = (state: UserState) => {
       state.userData = null;
       state.loading = false;
-      state.ready = true;
+      state.ifAuth = true;
     };
 
     builder
@@ -106,6 +106,6 @@ export const userSlice = createSlice({
   }
 });
 
-export const { selectUserData, selectReady, selectUserName } =
+export const { selectUserData, selectIfAuth, selectUserName } =
   userSlice.selectors;
 export default userSlice.reducer;
