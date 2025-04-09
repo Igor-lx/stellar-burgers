@@ -1,3 +1,6 @@
+import '../../index.css';
+import styles from './app.module.css';
+
 import { FC, useEffect } from 'react';
 import {
   useNavigate,
@@ -45,7 +48,7 @@ const App: FC = () => {
   const closeModal = () => navigate(-1);
 
   return (
-    <div className='app'>
+    <div className={styles.app}>
       <AppHeader />
       <Routes location={background || location}>
         <Route path='/' element={<ConstructorPage />} />
@@ -53,9 +56,11 @@ const App: FC = () => {
         <Route
           path='/feed/:number'
           element={
-            <div className='detailPageWrap'>
-              <p className={`text text_type_digits-default detailHeader`}>
-                {`#${orderNumber?.padStart(6, '0')}`}
+            <div className={styles.detailPageWrap}>
+              <p
+                className={`text text_type_digits-default ${styles.detailHeader}`}
+              >
+                {`#${orderNumber && orderNumber.padStart(6, '0')}`}
               </p>
               <OrderInfo />
             </div>
@@ -113,9 +118,11 @@ const App: FC = () => {
           path='/profile/orders/:number'
           element={
             <ProtectedRoute>
-              <div className='detailPageWrap'>
-                <p className={`text text_type_digits-default detailHeader`}>
-                  {`#${orderNumber?.padStart(6, '0')}`}
+              <div className={styles.detailPageWrap}>
+                <p
+                  className={`text text_type_digits-default ${styles.detailHeader}`}
+                >
+                  {`#${orderNumber && orderNumber.padStart(6, '0')}`}
                 </p>
                 <OrderInfo />
               </div>
@@ -125,8 +132,8 @@ const App: FC = () => {
         <Route
           path='/ingredients/:id'
           element={
-            <div className='detailPageWrap'>
-              <p className={`text text_type_main-large detailHeader`}>
+            <div className={styles.detailPageWrap}>
+              <p className={`text text_type_main-large ${styles.detailHeader}`}>
                 Детали ингредиента
               </p>
               <IngredientDetails />
@@ -142,7 +149,7 @@ const App: FC = () => {
             path='/feed/:number'
             element={
               <Modal
-                title={`#${orderNumber?.padStart(6, '0')}`}
+                title={`#${orderNumber && orderNumber.padStart(6, '0')}`}
                 onClose={closeModal}
               >
                 <OrderInfo />
@@ -152,7 +159,7 @@ const App: FC = () => {
           <Route
             path='/ingredients/:id'
             element={
-              <Modal title='Детали ингредиента' onClose={closeModal}>
+              <Modal title={'Детали ингредиента'} onClose={closeModal}>
                 <IngredientDetails />
               </Modal>
             }
@@ -162,7 +169,7 @@ const App: FC = () => {
             element={
               <ProtectedRoute>
                 <Modal
-                  title={`#${orderNumber?.padStart(6, '0')}`}
+                  title={`#${orderNumber && orderNumber.padStart(6, '0')}`}
                   onClose={closeModal}
                 >
                   <OrderInfo />
