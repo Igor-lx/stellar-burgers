@@ -1,43 +1,54 @@
 import { ProfileUI } from '@ui-pages';
-import { FC, SyntheticEvent, useEffect, useState } from 'react';
+import { FC, SyntheticEvent, useLayoutEffect, useState } from 'react';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { editUserData, selectUserData } from '../../store/slices/userSlice';
+import { Preloader } from '../../components/ui';
 
 export const Profile: FC = () => {
-  /** TODO: взять переменную из стора */
-  const user = {
-    name: '',
-    email: ''
-  };
+  const user = useAppSelector(selectUserData);
+
+  if (!user) {
+    return <Preloader />;
+  }
 
   const [formValue, setFormValue] = useState({
-    name: user.name,
-    email: user.email,
+    name: '',
+    email: '',
     password: ''
   });
 
-  useEffect(() => {
-    setFormValue((prevState) => ({
-      ...prevState,
-      name: user?.name || '',
-      email: user?.email || ''
-    }));
+  useLayoutEffect(() => {
+    if (user) {
+      setFormValue((prevState) => ({
+        ...prevState,
+        name: user.name,
+        email: user.email,
+        password: ''
+      }));
+    }
   }, [user]);
 
   const isFormChanged =
-    formValue.name !== user?.name ||
-    formValue.email !== user?.email ||
+    formValue.name !== user.name ||
+    formValue.email !== user.email ||
     !!formValue.password;
+
+  const dispatch = useAppDispatch();
 
   const handleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
+    dispatch(editUserData(formValue));
   };
 
   const handleCancel = (e: SyntheticEvent) => {
     e.preventDefault();
-    setFormValue({
-      name: user.name,
-      email: user.email,
-      password: ''
-    });
+    if (user) {
+      setFormValue({
+        name: user.name,
+        email: user.email,
+        password: ''
+      });
+    }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -56,6 +67,4 @@ export const Profile: FC = () => {
       handleInputChange={handleInputChange}
     />
   );
-
-  return null;
 };
