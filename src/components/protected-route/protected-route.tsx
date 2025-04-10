@@ -1,7 +1,6 @@
+import { useLocation, Navigate } from 'react-router-dom';
 import { useAppSelector } from '../../store/hooks';
-import { Navigate, useLocation } from 'react-router-dom';
-import { selectIfAuth, selectUserData } from '../../store/slices/userSlice';
-import { Preloader } from '../ui/preloader';
+import { Preloader } from '../ui';
 
 type ProtectedRouteProps = {
   publicRoute?: boolean;
@@ -13,26 +12,23 @@ export const ProtectedRoute = ({
   publicRoute
 }: ProtectedRouteProps) => {
   const location = useLocation();
-  const isAuth = useAppSelector(selectIfAuth);
-  const user = useAppSelector(selectUserData);
+  const { loading, userData } = useAppSelector((state) => state.user);
 
-  if (isAuth) {
+  if (loading) {
     return <Preloader />;
   }
 
-  const from = location.state?.from || '/';
-
-  if (publicRoute && user) {
+  if (publicRoute && userData) {
     return (
       <Navigate
         replace
-        to={from}
+        to='/'
         state={{ background: location.state?.from?.background ?? null }}
       />
     );
   }
 
-  if (!publicRoute && !user) {
+  if (!publicRoute && !userData) {
     const { background } = location.state ?? {};
     return (
       <Navigate
@@ -51,3 +47,5 @@ export const ProtectedRoute = ({
 
   return children;
 };
+
+export default ProtectedRoute;

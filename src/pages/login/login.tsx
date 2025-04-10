@@ -2,7 +2,6 @@ import { FC, SyntheticEvent, useState } from 'react';
 import { LoginUI } from '@ui-pages';
 import { useAppDispatch } from '../../store/hooks';
 import { signIn } from '../../store/slices/userSlice';
-import { setCookie } from '../../utils/cookie';
 
 export const Login: FC = () => {
   const [email, setEmail] = useState('');
