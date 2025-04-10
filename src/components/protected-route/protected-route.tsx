@@ -1,29 +1,26 @@
+import { FC } from 'react';
 import { useLocation, Navigate } from 'react-router-dom';
 import { useAppSelector } from '../../store/hooks';
-import { Preloader } from '../ui';
 
 type ProtectedRouteProps = {
   publicRoute?: boolean;
   children: React.ReactElement;
 };
 
-export const ProtectedRoute = ({
+export const ProtectedRoute: FC<ProtectedRouteProps> = ({
   children,
   publicRoute
-}: ProtectedRouteProps) => {
+}) => {
   const location = useLocation();
-  const { loading, userData } = useAppSelector((state) => state.user);
-
-  if (loading) {
-    return <Preloader />;
-  }
+  const { userData } = useAppSelector((state) => state.user);
 
   if (publicRoute && userData) {
+    // const from = location.state?.from || '/';
     return (
       <Navigate
         replace
         to='/'
-        state={{ background: location.state?.from?.background ?? null }}
+        state={{ background: location.state?.background ?? null }}
       />
     );
   }

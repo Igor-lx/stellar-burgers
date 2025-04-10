@@ -1,30 +1,36 @@
 import { ProfileUI } from '@ui-pages';
-import { FC, SyntheticEvent, useEffect, useState } from 'react';
+import { FC, SyntheticEvent, useLayoutEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { editUserData, selectUserData } from '../../store/slices/userSlice';
+import { Preloader } from '../../components/ui';
 
 export const Profile: FC = () => {
   const user = useAppSelector(selectUserData);
 
+  if (!user) {
+    return <Preloader />;
+  }
+
   const [formValue, setFormValue] = useState({
-    name: user?.name || '',
-    email: user?.email || '',
+    name: '',
+    email: '',
     password: ''
   });
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (user) {
       setFormValue((prevState) => ({
         ...prevState,
-        name: user.name || '',
-        email: user.email || ''
+        name: user.name,
+        email: user.email,
+        password: ''
       }));
     }
   }, [user]);
 
   const isFormChanged =
-    formValue.name !== user?.name ||
-    formValue.email !== user?.email ||
+    formValue.name !== user.name ||
+    formValue.email !== user.email ||
     !!formValue.password;
 
   const dispatch = useAppDispatch();
@@ -38,8 +44,8 @@ export const Profile: FC = () => {
     e.preventDefault();
     if (user) {
       setFormValue({
-        name: user.name || '',
-        email: user.email || '',
+        name: user.name,
+        email: user.email,
         password: ''
       });
     }

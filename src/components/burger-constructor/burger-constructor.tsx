@@ -34,10 +34,7 @@ export const BurgerConstructor: FC = () => {
 
   const orderIngredientIds = useMemo(() => {
     if (!bun) return [];
-    // Фильтруем undefined из массива, чтобы передать только строковые значения
-    return [bun.id, ...ingredients.map((item) => item.id)].filter(
-      (id): id is string => id !== undefined
-    );
+    return [bun._id, ...ingredients.map((item) => item._id)];
   }, [bun, ingredients]);
 
   const onOrderClick = () => {
