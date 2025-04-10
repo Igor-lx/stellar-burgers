@@ -22,7 +22,7 @@ import {
 } from '../../pages';
 import { useAppDispatch } from '../../store/hooks';
 import { fetchIngredients } from '../../store/slices/burgerIngredientsSlice';
-import { fetchUser } from '../../store/slices/userSlice';
+import { getUserData } from '../../store/slices/userSlice';
 import { AppHeader } from '../app-header';
 import { IngredientDetails } from '../ingredient-details';
 import { Modal } from '../modal';
@@ -42,7 +42,7 @@ const App: FC = () => {
 
   useEffect(() => {
     dispatch(fetchIngredients());
-    dispatch(fetchUser());
+    dispatch(getUserData());
   }, [dispatch]);
 
   const closeModal = () => navigate(-1);

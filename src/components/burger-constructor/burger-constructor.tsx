@@ -1,4 +1,3 @@
-import { BurgerConstructorUI } from '@ui';
 import { FC, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
@@ -9,7 +8,8 @@ import {
   fetchOrder,
   clearOrder
 } from '../../store/slices/orderSlice';
-import { selectUserData } from '../..//store/slices/userSlice';
+import { selectUserData } from '../../store/slices/userSlice';
+import { BurgerConstructorUI } from '../ui';
 
 export const BurgerConstructor: FC = () => {
   const dispatch = useAppDispatch();
@@ -25,7 +25,6 @@ export const BurgerConstructor: FC = () => {
 
   const price = useMemo(() => {
     const bunPrice = bun ? bun.price * 2 : 0;
-
     const ingredientsPrice = ingredients.reduce(
       (sum, item) => sum + item.price,
       0
@@ -35,7 +34,10 @@ export const BurgerConstructor: FC = () => {
 
   const orderIngredientIds = useMemo(() => {
     if (!bun) return [];
-    return [bun._id, ...ingredients.map((item) => item._id), bun._id];
+    // Фильтруем undefined из массива, чтобы передать только строковые значения
+    return [bun.id, ...ingredients.map((item) => item.id)].filter(
+      (id): id is string => id !== undefined
+    );
   }, [bun, ingredients]);
 
   const onOrderClick = () => {

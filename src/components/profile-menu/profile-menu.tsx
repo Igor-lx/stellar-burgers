@@ -10,6 +10,10 @@ export const ProfileMenu: FC = () => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
+  const handleLogout = () => {
+    dispatch(signOut());
+  };
+  /*
   const handleLogout = async () => {
     try {
       await dispatch(signOut()).unwrap();
@@ -20,6 +24,6 @@ export const ProfileMenu: FC = () => {
       throw new Error('Ошибка');
     }
   };
-
+*/
   return <ProfileMenuUI handleLogout={handleLogout} pathname={pathname} />;
 };

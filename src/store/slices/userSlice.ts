@@ -10,6 +10,7 @@ import {
 } from '@api';
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { TUser } from '@utils-types';
+import { deleteCookie, setCookie } from '../../utils/cookie';
 
 type UserState = {
   ifAuth: boolean;
@@ -23,29 +24,48 @@ const initialState: UserState = {
   userData: null
 };
 
-export const fetchUser = createAsyncThunk(
-  'user/fetchUser',
-  async () => await getUserApi()
-);
-
 export const signUp = createAsyncThunk(
   'user/signUp',
-  async (form: TRegisterData) => await registerUserApi(form)
+  async (form: TRegisterData, { dispatch }) => {
+    const response = await registerUserApi(form);
+    if (!response?.success) throw new Error('Registration failed');
+
+    setCookie('accessToken', response.accessToken);
+    localStorage.setItem('refreshToken', response.refreshToken);
+
+    await dispatch(getUserData());
+  }
 );
 
 export const signIn = createAsyncThunk(
   'user/signIn',
-  async (form: TLoginData) => await loginUserApi(form)
+  async (form: TLoginData, { dispatch }) => {
+    const result = await loginUserApi(form);
+    if (!result?.success) throw new Error('Login failed');
+
+    setCookie('accessToken', result.accessToken);
+    localStorage.setItem('refreshToken', result.refreshToken);
+
+    await dispatch(getUserData());
+  }
 );
 
-export const editUser = createAsyncThunk(
+export const signOut = createAsyncThunk('user/signOut', async () => {
+  const res = await logoutApi();
+  if (!res?.success) throw new Error('Logout failed');
+
+  deleteCookie('accessToken');
+  localStorage.removeItem('refreshToken');
+});
+
+export const getUserData = createAsyncThunk(
+  'user/getUser',
+  async () => await getUserApi()
+);
+
+export const editUserData = createAsyncThunk(
   'user/editUser',
   async (form: TRegisterData) => await updateUserApi(form)
-);
-
-export const signOut = createAsyncThunk(
-  'user/signOut',
-  async () => await logoutApi()
 );
 
 export const userSlice = createSlice({
@@ -60,15 +80,13 @@ export const userSlice = createSlice({
   extraReducers: (builder) => {
     const onPending = (state: UserState) => {
       state.loading = true;
-      state.ifAuth = false;
     };
 
     const onRejected = (state: UserState) => {
       state.loading = false;
-      state.ifAuth = true;
     };
 
-    const onSuccess = (
+    const onGetUserSuccess = (
       state: UserState,
       action: PayloadAction<TUserResponse>
     ) => {
@@ -80,25 +98,29 @@ export const userSlice = createSlice({
     const onSignOutSuccess = (state: UserState) => {
       state.userData = null;
       state.loading = false;
-      state.ifAuth = true;
+      state.ifAuth = false;
     };
 
     builder
       .addCase(signUp.pending, onPending)
       .addCase(signUp.rejected, onRejected)
-      .addCase(signUp.fulfilled, onSuccess)
+      .addCase(signUp.fulfilled, (state) => {
+        state.loading = false;
+      })
 
       .addCase(signIn.pending, onPending)
       .addCase(signIn.rejected, onRejected)
-      .addCase(signIn.fulfilled, onSuccess)
+      .addCase(signIn.fulfilled, (state) => {
+        state.loading = false;
+      })
 
-      .addCase(fetchUser.pending, onPending)
-      .addCase(fetchUser.rejected, onRejected)
-      .addCase(fetchUser.fulfilled, onSuccess)
+      .addCase(getUserData.pending, onPending)
+      .addCase(getUserData.rejected, onRejected)
+      .addCase(getUserData.fulfilled, onGetUserSuccess)
 
-      .addCase(editUser.pending, onPending)
-      .addCase(editUser.rejected, onRejected)
-      .addCase(editUser.fulfilled, onSuccess)
+      .addCase(editUserData.pending, onPending)
+      .addCase(editUserData.rejected, onRejected)
+      .addCase(editUserData.fulfilled, onGetUserSuccess)
 
       .addCase(signOut.pending, onPending)
       .addCase(signOut.rejected, onRejected)

@@ -11,18 +11,21 @@ export const initialState: BurgerConstructorState = {
   ingredients: []
 };
 
+const generateUniqueId = (): string => `${Date.now()}-${Math.random()}`;
+
 export const burgerConstructorSlice = createSlice({
   name: 'burgerConstructor',
   initialState,
   reducers: {
     addIngredient(state, action: PayloadAction<TConstructorIngredient>) {
-      switch (action.payload.type) {
+      const ingredient = { ...action.payload, id: generateUniqueId() };
+      switch (ingredient.type) {
         case 'bun': {
-          state.bun = action.payload;
+          state.bun = ingredient;
           break;
         }
         default: {
-          state.ingredients.push(action.payload);
+          state.ingredients.push(ingredient);
           break;
         }
       }
