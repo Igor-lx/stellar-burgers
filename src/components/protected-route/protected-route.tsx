@@ -16,7 +16,7 @@ export const ProtectedRoute = ({
   const isAuth = useAppSelector(selectIfAuth);
   const user = useAppSelector(selectUserData);
 
-  if (!isAuth) {
+  if (isAuth) {
     return <Preloader />;
   }
 
