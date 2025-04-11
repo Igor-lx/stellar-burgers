@@ -2,44 +2,25 @@ import { FC } from 'react';
 import { useLocation, Navigate } from 'react-router-dom';
 import { useAppSelector } from '../../store/hooks';
 
-type ProtectedRouteProps = {
+export type ProtectedRouteProps = {
   publicRoute?: boolean;
   children: React.ReactElement;
 };
 
 export const ProtectedRoute: FC<ProtectedRouteProps> = ({
   children,
-  publicRoute
+  publicRoute: anonymous = false
 }) => {
+  const isLoggedIn = useAppSelector((store) => store.user.ifAuth);
   const location = useLocation();
-  const { userData } = useAppSelector((state) => state.user);
+  const from = location.state?.from || '/';
 
-  if (publicRoute && userData) {
-    // const from = location.state?.from || '/';
-    return (
-      <Navigate
-        replace
-        to='/'
-        state={{ background: location.state?.background ?? null }}
-      />
-    );
+  if (anonymous && isLoggedIn) {
+    return <Navigate to={from} />;
   }
 
-  if (!publicRoute && !userData) {
-    const { background } = location.state ?? {};
-    return (
-      <Navigate
-        replace
-        to='/login'
-        state={{
-          from: {
-            ...location,
-            background,
-            state: null
-          }
-        }}
-      />
-    );
+  if (!anonymous && !isLoggedIn) {
+    return <Navigate to='/login' state={{ from: location }} />;
   }
 
   return children;

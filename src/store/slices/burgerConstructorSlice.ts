@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { TConstructorIngredient, TIngredient } from '@utils-types';
+import { TIngredient, TConstructorIngredient } from '../../utils/types';
+import { v4 as uuidv4 } from 'uuid';
 
 interface BurgerConstructorState {
   bun: TConstructorIngredient | null;
@@ -11,28 +12,21 @@ export const initialState: BurgerConstructorState = {
   ingredients: []
 };
 
-const generateUniqueId = (): string => `${Date.now()}-${Math.random()}`;
-
 export const burgerConstructorSlice = createSlice({
   name: 'burgerConstructor',
   initialState,
   reducers: {
-    addIngredient(state, action: PayloadAction<TIngredient>) {
-      const ingredient: TConstructorIngredient = {
-        ...action.payload,
-        id: generateUniqueId()
-      };
-
-      switch (ingredient.type) {
-        case 'bun': {
-          state.bun = ingredient;
-          break;
+    addIngredient: {
+      reducer: (state, action: PayloadAction<TConstructorIngredient>) => {
+        if (action.payload.type === 'bun') {
+          state.bun = action.payload;
+        } else {
+          state.ingredients.push(action.payload);
         }
-        default: {
-          state.ingredients.push(ingredient);
-          break;
-        }
-      }
+      },
+      prepare: (ingredient: TIngredient) => ({
+        payload: { ...ingredient, id: uuidv4() }
+      })
     },
     removeIngredient(state, action: PayloadAction<number>) {
       state.ingredients = state.ingredients.filter(
@@ -44,12 +38,11 @@ export const burgerConstructorSlice = createSlice({
       action: PayloadAction<{ fromIndex: number; toIndex: number }>
     ) {
       const { fromIndex, toIndex } = action.payload;
-      const ingredients = state.ingredients;
+      const ingredients = [...state.ingredients];
 
-      [ingredients[fromIndex], ingredients[toIndex]] = [
-        ingredients[toIndex],
-        ingredients[fromIndex]
-      ];
+      const [moved] = ingredients.splice(fromIndex, 1);
+      ingredients.splice(toIndex, 0, moved);
+      state.ingredients = ingredients;
     },
     clearConstructor(state) {
       state.bun = null;
