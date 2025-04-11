@@ -34,7 +34,7 @@ export const BurgerConstructor: FC = () => {
 
   const orderIngredientIds = useMemo(() => {
     if (!bun) return [];
-    return [bun._id, ...ingredients.map((item) => item._id)];
+    return [bun._id, ...ingredients.map((item) => item._id), bun._id];
   }, [bun, ingredients]);
 
   const onOrderClick = () => {
