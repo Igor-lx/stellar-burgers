@@ -20,7 +20,10 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
 }) => (
   <section className={styles.burger_constructor}>
     {constructorItems.bun ? (
-      <div className={`${styles.element} mb-4 mr-4`}>
+      <div
+        data-cy='burger-constructor-element'
+        className={`${styles.element} mb-4 mr-4`}
+      >
         <ConstructorElement
           type='top'
           isLocked
@@ -31,6 +34,7 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
       </div>
     ) : (
       <div
+        data-cy='noBuns'
         className={`${styles.noBuns} ${styles.noBunsTop} ml-8 mb-4 mr-5 text text_type_main-default`}
       >
         Выберите булки
@@ -44,12 +48,13 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
               ingredient={item}
               index={index}
               totalItems={constructorItems.ingredients.length}
-              key={item.id}
+              key={item.id} // Используем уникальный ID
             />
           )
         )
       ) : (
         <div
+          data-cy='noBuns'
           className={`${styles.noBuns} ml-8 mb-4 mr-5 text text_type_main-default`}
         >
           Выберите начинку
@@ -57,7 +62,10 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
       )}
     </ul>
     {constructorItems.bun ? (
-      <div className={`${styles.element} mt-4 mr-4`}>
+      <div
+        data-cy='burger-constructor-element'
+        className={`${styles.element} mt-4 mr-4`}
+      >
         <ConstructorElement
           type='bottom'
           isLocked
@@ -68,6 +76,7 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
       </div>
     ) : (
       <div
+        data-cy='noBuns'
         className={`${styles.noBuns} ${styles.noBunsBottom} ml-8 mb-4 mr-5 text text_type_main-default`}
       >
         Выберите булки
@@ -79,6 +88,7 @@ export const BurgerConstructorUI: FC<BurgerConstructorUIProps> = ({
         <CurrencyIcon type='primary' />
       </div>
       <Button
+        data-cy='place-order'
         htmlType='button'
         type='primary'
         size='large'
