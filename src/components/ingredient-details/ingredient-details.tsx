@@ -6,8 +6,10 @@ import { useAppSelector } from '../../store/hooks';
 import { selectIngredientsList } from '../../store/slices/burgerIngredientsSlice';
 
 export const IngredientDetails: FC = () => {
+  const id = useParams().id;
+
   const ingredientData = useAppSelector(selectIngredientsList).find(
-    (item) => item._id === useParams().id
+    (item) => item._id === id
   );
 
   if (!ingredientData) {

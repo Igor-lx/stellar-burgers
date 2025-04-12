@@ -6,6 +6,7 @@ import {
   getOrdersHistoryThunk,
   selectOrdersHistory
 } from '../../store/slices/ordersHistorySlice';
+import { Outlet } from 'react-router-dom';
 
 export const ProfileOrders: FC = () => {
   const orders: TOrder[] = useAppSelector(selectOrdersHistory);

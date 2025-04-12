@@ -1,11 +1,11 @@
 import { FC, memo, useMemo } from 'react';
-import { useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 import { OrderCardProps } from './type';
 import { TIngredient } from '@utils-types';
-import { OrderCardUI } from '../ui/order-card';
 import { useAppSelector } from '../../store/hooks';
 import { selectIngredientsList } from '../../store/slices/burgerIngredientsSlice';
+import { OrderCardUI } from '../ui';
 
 const maxIngredients = 6;
 
