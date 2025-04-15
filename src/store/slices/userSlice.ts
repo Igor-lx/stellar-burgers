@@ -15,12 +15,14 @@ import { deleteCookie, setCookie } from '../../utils/cookie';
 type UserState = {
   ifAuth: boolean;
   loading: boolean;
+  userChecked: boolean;
   userData: TUser | null;
 };
 
 const initialState: UserState = {
   ifAuth: false,
   loading: false,
+  userChecked: false,
   userData: null
 };
 
@@ -75,59 +77,87 @@ export const userSlice = createSlice({
   selectors: {
     selectUserData: (state: UserState) => state.userData,
     selectIfAuth: (state: UserState) => state.ifAuth,
+    selectIfLoading: (state: UserState) => state.loading,
+    selectUserChecked: (state: UserState) => state.userChecked,
     selectUserName: (state: UserState) => state.userData?.name || ''
   },
   extraReducers: (builder) => {
-    const onPending = (state: UserState) => {
-      state.loading = true;
-    };
-
-    const onRejected = (state: UserState) => {
-      state.loading = false;
-    };
-
-    const onGetUserSuccess = (
-      state: UserState,
-      action: PayloadAction<TUserResponse>
-    ) => {
-      state.loading = false;
-      state.ifAuth = true;
-      state.userData = action.payload.user;
-    };
-
-    const onSignOutSuccess = (state: UserState) => {
-      state.userData = null;
-      state.loading = false;
-      state.ifAuth = false;
-    };
-
     builder
-      .addCase(signUp.pending, onPending)
-      .addCase(signUp.rejected, onRejected)
+      .addCase(signUp.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(signUp.rejected, (state) => {
+        state.loading = false;
+      })
       .addCase(signUp.fulfilled, (state) => {
         state.loading = false;
       })
 
-      .addCase(signIn.pending, onPending)
-      .addCase(signIn.rejected, onRejected)
-      .addCase(signIn.fulfilled, (state) => {
+      .addCase(signIn.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(signIn.rejected, (state) => {
         state.loading = false;
       })
+      .addCase(signIn.fulfilled, (state) => {
+        state.loading = false;
+        state.ifAuth = true;
+      })
 
-      .addCase(getUserData.pending, onPending)
-      .addCase(getUserData.rejected, onRejected)
-      .addCase(getUserData.fulfilled, onGetUserSuccess)
+      .addCase(getUserData.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(getUserData.rejected, (state) => {
+        state.loading = false;
+        state.userChecked = true;
+        state.ifAuth = false;
+      })
+      .addCase(
+        getUserData.fulfilled,
+        (state, action: PayloadAction<TUserResponse>) => {
+          state.loading = false;
+          state.userData = action.payload.user;
+          state.ifAuth = true;
+          state.userChecked = true;
+        }
+      )
 
-      .addCase(editUserData.pending, onPending)
-      .addCase(editUserData.rejected, onRejected)
-      .addCase(editUserData.fulfilled, onGetUserSuccess)
+      .addCase(editUserData.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(editUserData.rejected, (state) => {
+        state.loading = false;
+      })
+      .addCase(
+        editUserData.fulfilled,
+        (state, action: PayloadAction<TUserResponse>) => {
+          state.loading = false;
+          state.userData = action.payload.user;
+          state.ifAuth = true;
+        }
+      )
 
-      .addCase(signOut.pending, onPending)
-      .addCase(signOut.rejected, onRejected)
-      .addCase(signOut.fulfilled, onSignOutSuccess);
+      .addCase(signOut.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(signOut.rejected, (state) => {
+        state.loading = false;
+      })
+      .addCase(signOut.fulfilled, (state) => {
+        state.userData = null;
+        state.ifAuth = false;
+        state.userChecked = true;
+        state.loading = false;
+      });
   }
 });
 
-export const { selectUserData, selectIfAuth, selectUserName } =
-  userSlice.selectors;
+export const {
+  selectUserData,
+  selectIfAuth,
+  selectIfLoading,
+  selectUserChecked,
+  selectUserName
+} = userSlice.selectors;
+
 export default userSlice.reducer;
