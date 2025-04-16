@@ -12,7 +12,7 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { TUser } from '@utils-types';
 import { deleteCookie, setCookie } from '../../utils/cookie';
 
-type UserState = {
+export type UserState = {
   ifAuth: boolean;
   loading: boolean;
   userChecked: boolean;
@@ -26,29 +26,30 @@ const initialState: UserState = {
   userData: null
 };
 
-export const signUp = createAsyncThunk(
+export const signUp = createAsyncThunk<TUserResponse, TRegisterData>(
   'user/signUp',
-  async (form: TRegisterData, { dispatch }) => {
+  async (form, { dispatch }) => {
     const response = await registerUserApi(form);
     if (!response?.success) throw new Error('Registration failed');
 
     setCookie('accessToken', response.accessToken);
     localStorage.setItem('refreshToken', response.refreshToken);
 
-    await dispatch(getUserData());
+    const userResponse = await dispatch(getUserData()).unwrap();
+    return userResponse;
   }
 );
-
-export const signIn = createAsyncThunk(
+export const signIn = createAsyncThunk<TUserResponse, TLoginData>(
   'user/signIn',
-  async (form: TLoginData, { dispatch }) => {
+  async (form, { dispatch }) => {
     const result = await loginUserApi(form);
     if (!result?.success) throw new Error('Login failed');
 
     setCookie('accessToken', result.accessToken);
     localStorage.setItem('refreshToken', result.refreshToken);
 
-    await dispatch(getUserData());
+    const userResponse = await dispatch(getUserData()).unwrap();
+    return userResponse;
   }
 );
 
@@ -89,9 +90,15 @@ export const userSlice = createSlice({
       .addCase(signUp.rejected, (state) => {
         state.loading = false;
       })
-      .addCase(signUp.fulfilled, (state) => {
-        state.loading = false;
-      })
+      .addCase(
+        signUp.fulfilled,
+        (state, action: PayloadAction<TUserResponse>) => {
+          state.loading = false;
+          state.userData = action.payload.user;
+          state.ifAuth = true;
+          state.userChecked = true;
+        }
+      )
 
       .addCase(signIn.pending, (state) => {
         state.loading = true;
@@ -99,10 +106,15 @@ export const userSlice = createSlice({
       .addCase(signIn.rejected, (state) => {
         state.loading = false;
       })
-      .addCase(signIn.fulfilled, (state) => {
-        state.loading = false;
-        state.ifAuth = true;
-      })
+      .addCase(
+        signIn.fulfilled,
+        (state, action: PayloadAction<TUserResponse>) => {
+          state.loading = false;
+          state.userData = action.payload.user;
+          state.ifAuth = true;
+          state.userChecked = true;
+        }
+      )
 
       .addCase(getUserData.pending, (state) => {
         state.loading = true;
@@ -134,6 +146,7 @@ export const userSlice = createSlice({
           state.loading = false;
           state.userData = action.payload.user;
           state.ifAuth = true;
+          state.userChecked = true;
         }
       )
 
