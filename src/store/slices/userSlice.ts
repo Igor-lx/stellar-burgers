@@ -159,5 +159,3 @@ export const {
   selectUserChecked,
   selectUserName
 } = userSlice.selectors;
-
-export default userSlice.reducer;

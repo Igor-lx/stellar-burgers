@@ -8,16 +8,6 @@ import {
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { clearConstructor } from './burgerConstructorSlice';
 
-/*
-export const fetchOrder = createAsyncThunk(
-  'order/fetch',
-  async (ids: string[], { dispatch }) => {
-    dispatch(clearConstructor());
-    return await orderBurgerApi(ids);
-  }
-);
-*/
-
 export const fetchOrder = createAsyncThunk(
   'order/fetch',
   async (ids: string[], { dispatch }) => {
