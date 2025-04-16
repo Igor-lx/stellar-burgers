@@ -6,7 +6,7 @@ import { ordersHistorySlice } from '../store/slices/ordersHistorySlice';
 
 import { orderSlice } from '../store/slices/orderSlice';
 import { userSlice } from '../store/slices/userSlice';
-import { TIngredient } from './types';
+import { TIngredient, TOrder, TOrdersData } from './types';
 
 const slices = {
   user: userSlice,
@@ -45,3 +45,33 @@ export const generateIngredient = (name: string, type: string): TIngredient => {
     image_large: 'image_large.png'
   };
 };
+/* ----------------------------------------------------------*/
+
+export const generateOrder = (
+  number: number,
+  ingredients: string[] = ['1', '2'],
+  overrides: Partial<TOrder> = {}
+): TOrder => {
+  const timestamp = new Date().toISOString();
+
+  return {
+    _id: `order-${number}-${Date.now()}`,
+    ingredients,
+    status: 'done',
+    name: `Тестовый заказ #${number}`,
+    createdAt: timestamp,
+    updatedAt: timestamp,
+    number,
+    ...overrides
+  };
+};
+
+export const generateFeed = (
+  orders: TOrder[],
+  total: number = orders.length,
+  totalToday: number = 0
+): TOrdersData => ({
+  orders,
+  total,
+  totalToday
+});
