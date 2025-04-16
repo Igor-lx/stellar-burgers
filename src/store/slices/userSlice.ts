@@ -83,6 +83,13 @@ export const userSlice = createSlice({
     selectUserName: (state: UserState) => state.userData?.name || ''
   },
   extraReducers: (builder) => {
+    const setAuthSuccess = (state: UserState, user: TUser) => {
+      state.loading = false;
+      state.userData = user;
+      state.ifAuth = true;
+      state.userChecked = true;
+    };
+
     builder
       .addCase(signUp.pending, (state) => {
         state.loading = true;
@@ -90,15 +97,9 @@ export const userSlice = createSlice({
       .addCase(signUp.rejected, (state) => {
         state.loading = false;
       })
-      .addCase(
-        signUp.fulfilled,
-        (state, action: PayloadAction<TUserResponse>) => {
-          state.loading = false;
-          state.userData = action.payload.user;
-          state.ifAuth = true;
-          state.userChecked = true;
-        }
-      )
+      .addCase(signUp.fulfilled, (state, action) => {
+        setAuthSuccess(state, action.payload.user);
+      })
 
       .addCase(signIn.pending, (state) => {
         state.loading = true;
@@ -106,15 +107,9 @@ export const userSlice = createSlice({
       .addCase(signIn.rejected, (state) => {
         state.loading = false;
       })
-      .addCase(
-        signIn.fulfilled,
-        (state, action: PayloadAction<TUserResponse>) => {
-          state.loading = false;
-          state.userData = action.payload.user;
-          state.ifAuth = true;
-          state.userChecked = true;
-        }
-      )
+      .addCase(signIn.fulfilled, (state, action) => {
+        setAuthSuccess(state, action.payload.user);
+      })
 
       .addCase(getUserData.pending, (state) => {
         state.loading = true;
@@ -124,15 +119,9 @@ export const userSlice = createSlice({
         state.userChecked = true;
         state.ifAuth = false;
       })
-      .addCase(
-        getUserData.fulfilled,
-        (state, action: PayloadAction<TUserResponse>) => {
-          state.loading = false;
-          state.userData = action.payload.user;
-          state.ifAuth = true;
-          state.userChecked = true;
-        }
-      )
+      .addCase(getUserData.fulfilled, (state, action) => {
+        setAuthSuccess(state, action.payload.user);
+      })
 
       .addCase(editUserData.pending, (state) => {
         state.loading = true;
@@ -140,15 +129,9 @@ export const userSlice = createSlice({
       .addCase(editUserData.rejected, (state) => {
         state.loading = false;
       })
-      .addCase(
-        editUserData.fulfilled,
-        (state, action: PayloadAction<TUserResponse>) => {
-          state.loading = false;
-          state.userData = action.payload.user;
-          state.ifAuth = true;
-          state.userChecked = true;
-        }
-      )
+      .addCase(editUserData.fulfilled, (state, action) => {
+        setAuthSuccess(state, action.payload.user);
+      })
 
       .addCase(signOut.pending, (state) => {
         state.loading = true;
