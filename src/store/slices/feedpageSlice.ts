@@ -26,7 +26,7 @@ export const fetchOrderByNumber = createAsyncThunk<TOrder, number>(
   }
 );
 
-interface IFeedState {
+export interface IFeedState {
   fetchStatus: 'idle' | 'loading' | 'succeeded' | 'failed';
   feedData: TOrdersData;
   orderByNumber: TOrder | null;
