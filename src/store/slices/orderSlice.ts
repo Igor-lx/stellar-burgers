@@ -21,7 +21,7 @@ export const getOrderByNum = createAsyncThunk(
   async (orderId: number) => await getOrderByNumberApi(orderId)
 );
 
-type OrderState = {
+export type OrderState = {
   fetchStatus: 'idle' | 'loading' | 'succeeded' | 'failed';
   order: TOrder | null;
 };
