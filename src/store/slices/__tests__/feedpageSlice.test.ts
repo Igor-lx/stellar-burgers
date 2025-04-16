@@ -1,98 +1,84 @@
-import { TNewOrderResponse, TOrderResponse } from '../../../utils/burger-api';
-import { generateOrder } from '../../../utils/test-utils';
-import { TOrder } from '../../../utils/types';
-import {
-  OrderState,
-  fetchOrder,
-  orderSlice,
-  getOrderByNum,
-  clearOrder
-} from '../orderSlice';
+import { TOrder, TOrdersData } from '../../../utils/types';
+import feedSlice, { fetchFeed, fetchOrderByNumber } from '../feedpageSlice';
 
-describe('orderSlice', () => {
-  let initialState: OrderState;
-  const mockOrder1: TOrder = generateOrder(1);
-  const mockOrder2: TOrder = generateOrder(2);
+describe('feedSlice', () => {
+  const initialState = feedSlice.getInitialState();
 
-  beforeEach(() => {
-    initialState = {
-      fetchStatus: 'idle',
-      order: null
-    };
+  const mockOrder: TOrder = {
+    _id: 'order-1',
+    ingredients: ['1', '2'],
+    status: 'done',
+    name: 'Тестовый заказ',
+    createdAt: '2024-01-01T00:00:00.000Z',
+    updatedAt: '2024-01-01T00:00:00.000Z',
+    number: 1234
+  };
+
+  const mockFeed: TOrdersData = {
+    orders: [mockOrder],
+    total: 10,
+    totalToday: 5
+  };
+
+  it('возврат начального состояния', () => {
+    expect(initialState.fetchStatus).toBe('idle');
+    expect(initialState.feedData.orders).toEqual([]);
   });
 
-  describe('fetchOrder', () => {
-    it('fetchStatus: loading при статусе pending', () => {
-      const action = fetchOrder.pending('', []);
-      const state = orderSlice.reducer(initialState, action);
-
+  describe('fetchFeed', () => {
+    it('статус loading при fetchFeed.pending', () => {
+      const state = feedSlice.reducer(initialState, fetchFeed.pending(''));
       expect(state.fetchStatus).toBe('loading');
     });
 
-    it('fetchStatus: failed и очиcтка order при статусе rejected', () => {
-      const testError = new Error('test error message');
-      const action = fetchOrder.rejected(testError, '', []);
-      const state = orderSlice.reducer(initialState, action);
-
-      expect(state.fetchStatus).toBe('failed');
-      expect(state.order).toBeNull();
+    it('обновляет feedData + статус succeeded при fetchFeed.fulfilled', () => {
+      const state = feedSlice.reducer(
+        initialState,
+        fetchFeed.fulfilled(mockFeed, '')
+      );
+      expect(state.fetchStatus).toBe('succeeded');
+      expect(state.feedData).toEqual(mockFeed);
     });
 
-    it('fetchStatus: succeeded и обновление order при статусе fulfilled', () => {
-      const response: TNewOrderResponse = {
-        success: true,
-        order: mockOrder1,
-        name: `Тестовый заказ #${mockOrder1.number}`
-      };
-      const action = fetchOrder.fulfilled(response, '', []);
-      const state = orderSlice.reducer(initialState, action);
-
-      expect(state.fetchStatus).toBe('succeeded');
-      expect(state.order).toEqual(mockOrder1);
+    it('очищает feedData + статус failed при fetchFeed.rejected', () => {
+      const preloaded = { ...initialState, feedData: mockFeed };
+      const state = feedSlice.reducer(
+        preloaded,
+        fetchFeed.rejected(new Error('Ошибка'), '')
+      );
+      expect(state.fetchStatus).toBe('failed');
+      expect(state.feedData).toEqual({ orders: [], total: 0, totalToday: 0 });
     });
   });
 
-  describe('getOrderByNum', () => {
-    it('getStatus: loading при статусе pending', () => {
-      const action = getOrderByNum.pending('', 1234);
-      const state = orderSlice.reducer(initialState, action);
-
+  describe('fetchOrderByNumber', () => {
+    it('сбрасывает orderByNumber + статус loading при fetchOrderByNumber.pending', () => {
+      const preloaded = { ...initialState, orderByNumber: mockOrder };
+      const state = feedSlice.reducer(
+        preloaded,
+        fetchOrderByNumber.pending('', 1234)
+      );
       expect(state.fetchStatus).toBe('loading');
+      expect(state.orderByNumber).toBeNull();
     });
 
-    it('getStatus: failed и очистка order при статусе rejected', () => {
-      const testError = new Error('test error message');
-      const action = getOrderByNum.rejected(testError, '', 1234);
-      const state = orderSlice.reducer(initialState, action);
-
-      expect(state.fetchStatus).toBe('failed');
-      expect(state.order).toBeNull();
-    });
-
-    it('getStatus: succeeded и обновление order при статусе fulfilled', () => {
-      const response: TOrderResponse = {
-        success: true,
-        orders: [mockOrder2]
-      };
-      const action = getOrderByNum.fulfilled(response, '', 1234);
-      const state = orderSlice.reducer(initialState, action);
-
+    it('обновляет orderByNumber + статус succeeded при fetchOrderByNumber.fulfilled', () => {
+      const state = feedSlice.reducer(
+        initialState,
+        fetchOrderByNumber.fulfilled(mockOrder, '', 1234)
+      );
       expect(state.fetchStatus).toBe('succeeded');
-      expect(state.order).toEqual(mockOrder2);
+      expect(state.orderByNumber).toEqual(mockOrder);
     });
-  });
 
-  describe('clearOrder', () => {
-    it('очистка order и перевод fetchStatus в idle', () => {
-      const preloadedState: OrderState = {
-        fetchStatus: 'succeeded',
-        order: mockOrder2
-      };
-      const action = clearOrder();
-      const state = orderSlice.reducer(preloadedState, action);
-
-      expect(state.fetchStatus).toBe('idle');
-      expect(state.order).toBeNull();
+    it('сбрасывает orderByNumber + статус failed при fetchOrderByNumber.rejected', () => {
+      const preloaded = { ...initialState, orderByNumber: mockOrder };
+      const state = feedSlice.reducer(
+        preloaded,
+        fetchOrderByNumber.rejected(new Error('Ошибка'), '', 1234)
+      );
+      expect(state.fetchStatus).toBe('failed');
+      expect(state.orderByNumber).toBeNull();
     });
   });
 });

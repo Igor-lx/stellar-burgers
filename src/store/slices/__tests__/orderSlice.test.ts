@@ -9,7 +9,7 @@ import {
   clearOrder
 } from '../orderSlice';
 
-describe('Проверка работы orderSlice', () => {
+describe('orderSlice', () => {
   const initialState: OrderState = {
     fetchStatus: 'idle',
     order: null
@@ -52,7 +52,6 @@ describe('Проверка работы orderSlice', () => {
     });
   });
 
-  // Тестируем getOrderByNum
   describe('getOrderByNum', () => {
     it('изменяет fetchStatus на "loading" при отправке pending', () => {
       const newState = orderSlice.reducer(
