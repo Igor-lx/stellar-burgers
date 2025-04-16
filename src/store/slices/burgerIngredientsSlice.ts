@@ -7,7 +7,7 @@ export const fetchIngredients = createAsyncThunk<TIngredient[]>(
   getIngredientsApi
 );
 
-interface IngredientsState {
+export interface IngredientsState {
   loading: boolean;
   list: TIngredient[];
 }
