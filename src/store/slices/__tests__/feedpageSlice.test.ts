@@ -1,24 +1,12 @@
+import { generateOrder, generateFeed } from '../../../utils/test-utils';
 import { TOrder, TOrdersData } from '../../../utils/types';
 import feedSlice, { fetchFeed, fetchOrderByNumber } from '../feedpageSlice';
 
 describe('feedSlice', () => {
   const initialState = feedSlice.getInitialState();
 
-  const mockOrder: TOrder = {
-    _id: 'order-1',
-    ingredients: ['1', '2'],
-    status: 'done',
-    name: 'Тестовый заказ',
-    createdAt: '2024-01-01T00:00:00.000Z',
-    updatedAt: '2024-01-01T00:00:00.000Z',
-    number: 1234
-  };
-
-  const mockFeed: TOrdersData = {
-    orders: [mockOrder],
-    total: 10,
-    totalToday: 5
-  };
+  const mockOrder = generateOrder(1234);
+  const mockFeed = generateFeed([mockOrder]);
 
   it('возврат начального состояния', () => {
     expect(initialState.fetchStatus).toBe('idle');
