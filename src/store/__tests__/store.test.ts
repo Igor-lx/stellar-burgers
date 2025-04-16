@@ -1,5 +1,5 @@
 import { rootReducer } from '../store';
-import { getExpectedInitialState } from '../../utils/utils';
+import { getExpectedInitialState } from '../../utils/test-utils';
 
 describe('тест rootReducer', () => {
   it('инициализирует корректное начальное состояние', () => {
