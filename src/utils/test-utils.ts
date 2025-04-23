@@ -6,7 +6,7 @@ import { ordersHistorySlice } from '../store/slices/ordersHistorySlice';
 
 import { orderSlice } from '../store/slices/orderSlice';
 import { userSlice } from '../store/slices/userSlice';
-import { TIngredient, TOrder, TOrdersData } from './types';
+import { TIngredient, TOrder, TOrdersData, TUser } from './types';
 
 const slices = {
   user: userSlice,
@@ -75,3 +75,10 @@ export const generateFeed = (
   total,
   totalToday
 });
+
+export function generateTestUser(
+  name = 'Test User',
+  email = 'test@example.com'
+): TUser {
+  return { name, email };
+}

@@ -7,41 +7,40 @@ import {
 } from '../burgerIngredientsSlice';
 
 describe('ingredientsSlice', () => {
-  const ingredients: TIngredient[] = [
+  let initialState: IngredientsState;
+  const sampleIngredients: TIngredient[] = [
     generateIngredient('Test Sauce', 'sauce'),
     generateIngredient('Test Bun', 'bun'),
     generateIngredient('Test Main', 'main')
   ];
 
-  let initialStateSample: IngredientsState;
-
   beforeEach(() => {
-    initialStateSample = {
-      loading: false,
-      list: []
-    };
+    initialState = { loading: false, list: [] };
   });
 
-  it('status: pending', () => {
-    const action = fetchIngredients.pending('');
-    const state = ingredientsSlice.reducer(initialStateSample, action);
-
+  it('должен устанавливать loading true при pending', () => {
+    const state = ingredientsSlice.reducer(
+      initialState,
+      fetchIngredients.pending('')
+    );
     expect(state.loading).toBe(true);
     expect(state.list).toEqual([]);
   });
 
-  it('status:  fulfilled', () => {
-    const action = fetchIngredients.fulfilled(ingredients, '');
-    const state = ingredientsSlice.reducer(initialStateSample, action);
-
+  it('должен записывать список и сбрасывать loading при fulfilled', () => {
+    const state = ingredientsSlice.reducer(
+      initialState,
+      fetchIngredients.fulfilled(sampleIngredients, '')
+    );
     expect(state.loading).toBe(false);
-    expect(state.list).toEqual(ingredients);
+    expect(state.list).toEqual(sampleIngredients);
   });
 
-  it('status: rejected', () => {
-    const action = fetchIngredients.rejected(null, '');
-    const state = ingredientsSlice.reducer(initialStateSample, action);
-
+  it('должен сбрасывать loading при rejected', () => {
+    const state = ingredientsSlice.reducer(
+      initialState,
+      fetchIngredients.rejected(new Error(), '')
+    );
     expect(state.loading).toBe(false);
     expect(state.list).toEqual([]);
   });

@@ -8,96 +8,84 @@ import {
   clearConstructor,
   BurgerConstructorState
 } from '../burgerConstructorSlice';
-import { v4 as uuidSample } from 'uuid';
+import { v4 as uuid } from 'uuid';
 
 jest.mock('uuid', () => ({
   v4: jest.fn().mockReturnValue('test-uuid')
 }));
 
 describe('burgerConstructorSlice', () => {
-  const bunSample: TIngredient = generateIngredient('Test Bun', 'bun');
-  const ingredient1: TIngredient = generateIngredient('Test Sauce', 'sauce');
-  const ingredient2: TIngredient = generateIngredient('Test Main', 'main');
-
-  let initialStateSample: BurgerConstructorState;
+  let initialState: BurgerConstructorState;
+  const bunSample = generateIngredient('Test Bun', 'bun');
+  const sauceSample = generateIngredient('Test Sauce', 'sauce');
+  const mainSample = generateIngredient('Test Main', 'main');
 
   beforeEach(() => {
-    initialStateSample = {
+    initialState = { bun: null, ingredients: [] };
+  });
+
+  it('должен добавлять булку в состояние', () => {
+    const action = addIngredient({
+      ...bunSample,
+      id: uuid()
+    } as TConstructorIngredient);
+    const state = burgerConstructorSlice.reducer(initialState, action);
+    expect(state.bun).toEqual({ ...bunSample, id: uuid() });
+    expect(state.ingredients).toEqual([]);
+  });
+
+  it('должен добавлять ингредиент в список', () => {
+    const action = addIngredient({
+      ...sauceSample,
+      id: uuid()
+    } as TConstructorIngredient);
+    const state = burgerConstructorSlice.reducer(initialState, action);
+    expect(state.ingredients).toEqual([{ ...sauceSample, id: uuid() }]);
+    expect(state.bun).toBeNull();
+  });
+
+  it('должен удалять ингредиент по индексу', () => {
+    const populated = {
       bun: null,
-      ingredients: []
+      ingredients: [
+        { ...sauceSample, id: uuid() },
+        { ...mainSample, id: uuid() }
+      ]
     };
-  });
-
-  it('добавление булки', () => {
     const state = burgerConstructorSlice.reducer(
-      initialStateSample,
-      addIngredient({
-        ...bunSample,
-        id: uuidSample()
-      } as TConstructorIngredient)
-    );
-    expect(state.bun).toEqual({ ...bunSample, id: uuidSample() });
-    expect(state.ingredients).toEqual(initialStateSample.ingredients);
-  });
-
-  it('добавление ингредиента', () => {
-    const state = burgerConstructorSlice.reducer(
-      initialStateSample,
-      addIngredient({
-        ...ingredient1,
-        id: uuidSample()
-      } as TConstructorIngredient)
-    );
-    expect(state.ingredients).toHaveLength(1);
-    expect(state.ingredients[0]).toEqual({
-      ...ingredient1,
-      id: uuidSample()
-    });
-    expect(state.bun).toEqual(initialStateSample.bun);
-  });
-
-  it('удаление ингредиента', () => {
-    const state = burgerConstructorSlice.reducer(
-      {
-        bun: null,
-        ingredients: [
-          { ...ingredient1, id: uuidSample() },
-          { ...ingredient2, id: uuidSample() }
-        ]
-      },
+      populated,
       removeIngredient(0)
     );
-    expect(state.ingredients).toEqual([{ ...ingredient2, id: uuidSample() }]);
+    expect(state.ingredients).toEqual([{ ...mainSample, id: uuid() }]);
   });
 
-  it('перемещение ингредиента', () => {
+  it('должен перемещать ингредиент из одного положения в другое', () => {
+    const populated = {
+      bun: null,
+      ingredients: [
+        { ...sauceSample, id: uuid() },
+        { ...mainSample, id: uuid() }
+      ]
+    };
     const state = burgerConstructorSlice.reducer(
-      {
-        bun: null,
-        ingredients: [
-          { ...ingredient1, id: uuidSample() },
-          { ...ingredient2, id: uuidSample() }
-        ]
-      },
+      populated,
       moveIngredient({ fromIndex: 0, toIndex: 1 })
     );
     expect(state.ingredients).toEqual([
-      { ...ingredient2, id: uuidSample() },
-      { ...ingredient1, id: uuidSample() }
+      { ...mainSample, id: uuid() },
+      { ...sauceSample, id: uuid() }
     ]);
   });
 
-  it('очистка конструктора', () => {
-    const state = burgerConstructorSlice.reducer(
-      {
-        bun: { ...bunSample, id: uuidSample() },
-        ingredients: [
-          { ...ingredient1, id: uuidSample() },
-          { ...ingredient2, id: uuidSample() }
-        ]
-      },
-      clearConstructor()
-    );
-    expect(state).toEqual(initialStateSample);
+  it('должен очищать конструктор', () => {
+    const populated = {
+      bun: { ...bunSample, id: uuid() },
+      ingredients: [
+        { ...sauceSample, id: uuid() },
+        { ...mainSample, id: uuid() }
+      ]
+    };
+    const state = burgerConstructorSlice.reducer(populated, clearConstructor());
+    expect(state).toEqual(initialState);
   });
 });
