@@ -15,14 +15,14 @@ describe('Burger Constructor Page', () => {
     window.localStorage.setItem('refreshToken', 'fake-refresh-token');
     cy.setCookie('accessToken', 'fake-access-token');
 
-    // идем на главную
+    // 4) Заходим на главную
     cy.visit('http://localhost:4000/');
 
-    // ждем данные из мока
+    // 5) Ждём, пока из мока придут данные
     cy.wait('@getIngredients');
     cy.wait('@getUser');
 
-    // карточки ингредиентов зарендерились
+    // 6) Убеждаемся, что карточки ингредиентов зарендерились
     cy.get('[data-cy="ingredient-bun"]').should('have.length.at.least', 1);
     cy.get('[data-cy="ingredient-main"]').should('have.length.at.least', 1);
     cy.get('[data-cy="ingredient-sauce"]').should('have.length.at.least', 1);
@@ -35,9 +35,9 @@ describe('Burger Constructor Page', () => {
     cy.get('[data-cy="no-fillings"]').should('exist');
 
     // Добавляем  булку и начинки
-    +cy.get('[data-cy="ingredient-bun"]').first().scrollIntoView().click();
-    +cy.get('[data-cy="ingredient-main"]').first().scrollIntoView().click();
-    +cy.get('[data-cy="ingredient-sauce"]').first().scrollIntoView().click();
+    cy.get('[data-cy="ingredient-bun"]').first().click();
+    cy.get('[data-cy="ingredient-main"]').first().click();
+    cy.get('[data-cy="ingredient-sauce"]').first().click();
 
     // Проверяем
     cy.get('[data-cy="constructor"]').within(() => {
@@ -48,8 +48,7 @@ describe('Burger Constructor Page', () => {
         .should('have.length', 2);
     });
   });
-});
-/*
+
   it('Открытие и закрытие модального окна ингредиента', () => {
     // Сохраняем имя первой начинки
     cy.get('[data-cy="ingredient-main"]').first().as('firstMain');
@@ -104,5 +103,3 @@ describe('Burger Constructor Page', () => {
     cy.get('[data-cy="no-fillings"]').should('exist');
   });
 });
-
-*/

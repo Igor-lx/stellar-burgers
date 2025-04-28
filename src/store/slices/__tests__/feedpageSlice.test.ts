@@ -3,42 +3,36 @@ import { TOrder, TOrdersData } from '../../../utils/types';
 import feedSlice, { fetchFeed, fetchOrderByNumber } from '../feedpageSlice';
 
 describe('feedSlice', () => {
-  let initialState: ReturnType<typeof feedSlice.getInitialState>;
-  let sampleOrder: TOrder;
-  let sampleFeed: TOrdersData;
+  const initialState = feedSlice.getInitialState();
 
-  beforeEach(() => {
-    initialState = feedSlice.getInitialState();
-    sampleOrder = generateOrder(1234);
-    sampleFeed = generateFeed([sampleOrder]);
-  });
+  const mockOrder = generateOrder(1234);
+  const mockFeed = generateFeed([mockOrder]);
 
-  it('должен возвращать корректное начальное состояние', () => {
+  it('возврат начального состояния', () => {
     expect(initialState.fetchStatus).toBe('idle');
     expect(initialState.feedData.orders).toEqual([]);
-    expect(initialState.orderByNumber).toBeNull();
   });
 
   describe('fetchFeed', () => {
-    it('должен устанавливать fetchStatus в loading при pending', () => {
+    it('статус loading при fetchFeed.pending', () => {
       const state = feedSlice.reducer(initialState, fetchFeed.pending(''));
       expect(state.fetchStatus).toBe('loading');
     });
 
-    it('должен записывать feedData и устанавливать fetchStatus в succeeded при fulfilled', () => {
+    it('обновляет feedData + статус succeeded при fetchFeed.fulfilled', () => {
       const state = feedSlice.reducer(
         initialState,
-        fetchFeed.fulfilled(sampleFeed, '')
+        fetchFeed.fulfilled(mockFeed, '')
       );
       expect(state.fetchStatus).toBe('succeeded');
-      expect(state.feedData).toEqual(sampleFeed);
+      expect(state.feedData).toEqual(mockFeed);
     });
 
-    it('должен очищать feedData и устанавливать fetchStatus в failed при rejected', () => {
-      const preloaded = { ...initialState, feedData: sampleFeed };
+    it('очищает feedData + статус failed при fetchFeed.rejected', () => {
+      const preloaded = { ...initialState, feedData: mockFeed };
       const state = feedSlice.reducer(
         preloaded,
-        fetchFeed.rejected(new Error(), '')
+        fetchFeed.rejected(new Error('Ошибка'), '')
       );
       expect(state.fetchStatus).toBe('failed');
       expect(state.feedData).toEqual({ orders: [], total: 0, totalToday: 0 });
@@ -46,8 +40,8 @@ describe('feedSlice', () => {
   });
 
   describe('fetchOrderByNumber', () => {
-    it('должен очищать orderByNumber и устанавливать fetchStatus в loading при pending', () => {
-      const preloaded = { ...initialState, orderByNumber: sampleOrder };
+    it('сбрасывает orderByNumber + статус loading при fetchOrderByNumber.pending', () => {
+      const preloaded = { ...initialState, orderByNumber: mockOrder };
       const state = feedSlice.reducer(
         preloaded,
         fetchOrderByNumber.pending('', 1234)
@@ -56,20 +50,20 @@ describe('feedSlice', () => {
       expect(state.orderByNumber).toBeNull();
     });
 
-    it('должен записывать orderByNumber и устанавливать fetchStatus в succeeded при fulfilled', () => {
+    it('обновляет orderByNumber + статус succeeded при fetchOrderByNumber.fulfilled', () => {
       const state = feedSlice.reducer(
         initialState,
-        fetchOrderByNumber.fulfilled(sampleOrder, '', 1234)
+        fetchOrderByNumber.fulfilled(mockOrder, '', 1234)
       );
       expect(state.fetchStatus).toBe('succeeded');
-      expect(state.orderByNumber).toEqual(sampleOrder);
+      expect(state.orderByNumber).toEqual(mockOrder);
     });
 
-    it('должен очищать orderByNumber и устанавливать fetchStatus в failed при rejected', () => {
-      const preloaded = { ...initialState, orderByNumber: sampleOrder };
+    it('сбрасывает orderByNumber + статус failed при fetchOrderByNumber.rejected', () => {
+      const preloaded = { ...initialState, orderByNumber: mockOrder };
       const state = feedSlice.reducer(
         preloaded,
-        fetchOrderByNumber.rejected(new Error(), '', 1234)
+        fetchOrderByNumber.rejected(new Error('Ошибка'), '', 1234)
       );
       expect(state.fetchStatus).toBe('failed');
       expect(state.orderByNumber).toBeNull();

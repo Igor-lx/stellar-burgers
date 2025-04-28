@@ -1,50 +1,45 @@
 import { generateOrder, generateFeed } from '../../../utils/test-utils';
-import { TOrder, TOrdersData } from '../../../utils/types';
 import {
   ordersHistorySlice,
   getOrdersHistoryThunk
 } from '../ordersHistorySlice';
 
 describe('ordersHistorySlice', () => {
-  let initialState: ReturnType<typeof ordersHistorySlice.getInitialState>;
-  let sampleOrder1: TOrder;
-  let sampleOrder2: TOrder;
-  let sampleFeed: TOrdersData;
+  const initialState = ordersHistorySlice.getInitialState();
 
-  beforeEach(() => {
-    initialState = ordersHistorySlice.getInitialState();
-    sampleOrder1 = generateOrder(1234);
-    sampleOrder2 = generateOrder(5678);
-    sampleFeed = generateFeed([sampleOrder1, sampleOrder2]);
-  });
+  const mockOrder1 = generateOrder(1234);
+  const mockOrder2 = generateOrder(5678);
+  const mockOrdersHistory = generateFeed([mockOrder1, mockOrder2]);
 
-  it('должен возвращать корректное начальное состояние', () => {
+  it('возврат начального состояния', () => {
     expect(initialState.isLoading).toBe(false);
     expect(initialState.ordersHistory).toEqual([]);
   });
 
-  it('должен устанавливать isLoading в true при pending', () => {
-    const state = ordersHistorySlice.reducer(
-      initialState,
-      getOrdersHistoryThunk.pending('')
-    );
-    expect(state.isLoading).toBe(true);
-  });
+  describe('getOrdersHistoryThunk', () => {
+    it('ставит isLoading в true при статусе pending', () => {
+      const state = ordersHistorySlice.reducer(
+        initialState,
+        getOrdersHistoryThunk.pending('')
+      );
+      expect(state.isLoading).toBe(true);
+    });
 
-  it('должен записывать ordersHistory и сбрасывать isLoading при fulfilled', () => {
-    const state = ordersHistorySlice.reducer(
-      initialState,
-      getOrdersHistoryThunk.fulfilled(sampleFeed.orders, '')
-    );
-    expect(state.isLoading).toBe(false);
-    expect(state.ordersHistory).toEqual(sampleFeed.orders);
-  });
+    it('обновляет ordersHistory и ставит isLoading в false при статусе fulfilled', () => {
+      const state = ordersHistorySlice.reducer(
+        initialState,
+        getOrdersHistoryThunk.fulfilled(mockOrdersHistory.orders, '')
+      );
+      expect(state.isLoading).toBe(false);
+      expect(state.ordersHistory).toEqual(mockOrdersHistory.orders);
+    });
 
-  it('должен сбрасывать isLoading при rejected', () => {
-    const state = ordersHistorySlice.reducer(
-      initialState,
-      getOrdersHistoryThunk.rejected(new Error(), '')
-    );
-    expect(state.isLoading).toBe(false);
+    it('ставит isLoading в false при статусе rejected', () => {
+      const state = ordersHistorySlice.reducer(
+        initialState,
+        getOrdersHistoryThunk.rejected(new Error('Ошибка'), '')
+      );
+      expect(state.isLoading).toBe(false);
+    });
   });
 });

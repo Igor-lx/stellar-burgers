@@ -1,8 +1,8 @@
-import { generateTestUser } from '../../../utils/test-utils';
+import { TUser } from '../../../utils/types';
 import {
   UserState,
-  userSlice,
   signUp,
+  userSlice,
   signIn,
   signOut,
   getUserData,
@@ -21,165 +21,139 @@ describe('userSlice', () => {
     };
   });
 
-  describe('signUp', () => {
-    it('должен устанавливать loading true при pending', () => {
-      const state = userSlice.reducer(initialState, {
-        type: signUp.pending.type
-      });
-      expect(state.loading).toBe(true);
-    });
-
-    it('должен сбрасывать loading при rejected', () => {
-      const state = userSlice.reducer(
-        { ...initialState, loading: true },
-        { type: signUp.rejected.type }
-      );
-      expect(state.loading).toBe(false);
-    });
-
-    it('должен сохранять userData, ifAuth, userChecked и сбрасывать loading при fulfilled', () => {
-      const user = generateTestUser();
-      const state = userSlice.reducer(initialState, {
-        type: signUp.fulfilled.type,
-        payload: { user }
-      });
-      expect(state).toEqual({
-        ...initialState,
-        loading: false,
-        ifAuth: true,
-        userChecked: true,
-        userData: user
-      });
+  it('signUp.pending — устанавливает loading в true', () => {
+    const action = { type: signUp.pending.type };
+    const state = userSlice.reducer(initialState, action);
+    expect(state).toEqual({
+      ...initialState,
+      loading: true
     });
   });
 
-  describe('signIn', () => {
-    it('должен устанавливать loading true при pending', () => {
-      const state = userSlice.reducer(initialState, {
-        type: signIn.pending.type
-      });
-      expect(state.loading).toBe(true);
-    });
-
-    it('должен сбрасывать loading при rejected', () => {
-      const state = userSlice.reducer(
-        { ...initialState, loading: true },
-        { type: signIn.rejected.type }
-      );
-      expect(state.loading).toBe(false);
-    });
-
-    it('должен сохранять userData, ifAuth, userChecked при fulfilled', () => {
-      const user = generateTestUser('Login User', 'login@mail.com');
-      const state = userSlice.reducer(initialState, {
-        type: signIn.fulfilled.type,
-        payload: { user }
-      });
-      expect(state).toEqual({
-        ...initialState,
-        loading: false,
-        ifAuth: true,
-        userChecked: true,
-        userData: user
-      });
+  it('signUp.rejected — сбрасывает loading', () => {
+    const action = { type: signUp.rejected.type };
+    const state = userSlice.reducer({ ...initialState, loading: true }, action);
+    expect(state).toEqual({
+      ...initialState,
+      loading: false
     });
   });
 
-  describe('signOut', () => {
-    it('должен устанавливать loading true при pending', () => {
-      const state = userSlice.reducer(initialState, {
-        type: signOut.pending.type
-      });
-      expect(state.loading).toBe(true);
-    });
-
-    it('должен сбрасывать loading при rejected', () => {
-      const state = userSlice.reducer(
-        { ...initialState, loading: true },
-        { type: signOut.rejected.type }
-      );
-      expect(state.loading).toBe(false);
-    });
-
-    it('должен очищать userData и устанавливать userChecked true при fulfilled', () => {
-      const preloaded: UserState = {
-        ifAuth: true,
-        loading: false,
-        userChecked: true,
-        userData: generateTestUser()
-      };
-      const state = userSlice.reducer(preloaded, {
-        type: signOut.fulfilled.type
-      });
-      expect(state).toEqual({ ...initialState, userChecked: true });
+  it('signUp.fulfilled — устанавливает userData, ifAuth, userChecked, сбрасывает loading', () => {
+    const user: TUser = { name: 'Test', email: 'test@mail.com' };
+    const action = { type: signUp.fulfilled.type, payload: { user } };
+    const state = userSlice.reducer(initialState, action);
+    expect(state).toEqual({
+      loading: false,
+      ifAuth: true,
+      userChecked: true,
+      userData: user
     });
   });
 
-  describe('getUserData', () => {
-    it('должен устанавливать loading true при pending', () => {
-      const state = userSlice.reducer(initialState, {
-        type: getUserData.pending.type
-      });
-      expect(state.loading).toBe(true);
-    });
-
-    it('должен сбрасывать loading и устанавливать userChecked true при rejected', () => {
-      const state = userSlice.reducer(
-        { ...initialState, loading: true },
-        { type: getUserData.rejected.type }
-      );
-      expect(state).toEqual({
-        ...initialState,
-        loading: false,
-        userChecked: true
-      });
-    });
-
-    it('должен сохранять userData, ifAuth, userChecked при fulfilled', () => {
-      const user = generateTestUser('Fetched User', 'fetched@mail.com');
-      const state = userSlice.reducer(initialState, {
-        type: getUserData.fulfilled.type,
-        payload: { user }
-      });
-      expect(state).toEqual({
-        ...initialState,
-        loading: false,
-        ifAuth: true,
-        userChecked: true,
-        userData: user
-      });
+  it('signIn.pending — устанавливает loading в true', () => {
+    const action = { type: signIn.pending.type };
+    const state = userSlice.reducer(initialState, action);
+    expect(state).toEqual({
+      ...initialState,
+      loading: true
     });
   });
 
-  describe('editUserData', () => {
-    it('должен устанавливать loading true при pending', () => {
-      const state = userSlice.reducer(initialState, {
-        type: editUserData.pending.type
-      });
-      expect(state.loading).toBe(true);
+  it('signIn.rejected — сбрасывает loading', () => {
+    const action = { type: signIn.rejected.type };
+    const state = userSlice.reducer({ ...initialState, loading: true }, action);
+    expect(state).toEqual({
+      ...initialState,
+      loading: false
     });
+  });
 
-    it('должен сбрасывать loading при rejected', () => {
-      const state = userSlice.reducer(
-        { ...initialState, loading: true },
-        { type: editUserData.rejected.type }
-      );
-      expect(state.loading).toBe(false);
+  it('signIn.fulfilled — обновляет userData, ifAuth, userChecked', () => {
+    const user: TUser = { name: 'Login User', email: 'login@mail.com' };
+    const action = { type: signIn.fulfilled.type, payload: { user } };
+    const state = userSlice.reducer(initialState, action);
+    expect(state).toEqual({
+      loading: false,
+      ifAuth: true,
+      userChecked: true,
+      userData: user
     });
+  });
 
-    it('должен сохранять userData, ifAuth, userChecked при fulfilled', () => {
-      const user = generateTestUser('Updated User', 'updated@mail.com');
-      const state = userSlice.reducer(initialState, {
-        type: editUserData.fulfilled.type,
-        payload: { user }
-      });
-      expect(state).toEqual({
-        ...initialState,
-        loading: false,
-        ifAuth: true,
-        userChecked: true,
-        userData: user
-      });
+  it('signOut.fulfilled — сбрасывает auth и userData', () => {
+    const loggedInState: UserState = {
+      ifAuth: true,
+      loading: false,
+      userChecked: true,
+      userData: { name: 'Name', email: 'email@mail.com' }
+    };
+    const action = { type: signOut.fulfilled.type };
+    const state = userSlice.reducer(loggedInState, action);
+    expect(state).toEqual({
+      ...initialState,
+      userChecked: true
+    });
+  });
+
+  it('getUserData.pending — loading true', () => {
+    const action = { type: getUserData.pending.type };
+    const state = userSlice.reducer(initialState, action);
+    expect(state).toEqual({
+      ...initialState,
+      loading: true
+    });
+  });
+
+  it('getUserData.fulfilled — обновляет userData и авторизацию', () => {
+    const user: TUser = { name: 'Get User', email: 'get@mail.com' };
+    const action = { type: getUserData.fulfilled.type, payload: { user } };
+    const state = userSlice.reducer(initialState, action);
+    expect(state).toEqual({
+      loading: false,
+      ifAuth: true,
+      userChecked: true,
+      userData: user
+    });
+  });
+
+  it('getUserData.rejected — loading false, userChecked true, ifAuth false', () => {
+    const action = { type: getUserData.rejected.type };
+    const state = userSlice.reducer({ ...initialState, loading: true }, action);
+    expect(state).toEqual({
+      ...initialState,
+      loading: false,
+      userChecked: true
+    });
+  });
+
+  it('editUserData.pending — loading true', () => {
+    const action = { type: editUserData.pending.type };
+    const state = userSlice.reducer(initialState, action);
+    expect(state).toEqual({
+      ...initialState,
+      loading: true
+    });
+  });
+
+  it('editUserData.rejected — loading false', () => {
+    const action = { type: editUserData.rejected.type };
+    const state = userSlice.reducer({ ...initialState, loading: true }, action);
+    expect(state).toEqual({
+      ...initialState,
+      loading: false
+    });
+  });
+
+  it('editUserData.fulfilled — обновляет userData', () => {
+    const user: TUser = { name: 'Updated', email: 'updated@mail.com' };
+    const action = { type: editUserData.fulfilled.type, payload: { user } };
+    const state = userSlice.reducer(initialState, action);
+    expect(state).toEqual({
+      loading: false,
+      ifAuth: true,
+      userChecked: true,
+      userData: user
     });
   });
 });
