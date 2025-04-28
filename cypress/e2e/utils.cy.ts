@@ -1,7 +1,7 @@
 export function openModal() {
-  cy.get("[data-cy='ingredients']")
+  cy.get("[data-cy='ingredients-bun']")
     .first()
-    .find("[data-cy='ingredients-container']")
+    .find("[data-cy='ingredient-bun']")
     .first()
     .click();
 }

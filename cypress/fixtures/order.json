@@ -5,27 +5,23 @@
     "ingredients": [
       {
         "_id": "643d69a5c3f7b9001cfa093c",
-        "name": "Краторная булка N-200i",
+        "name": "ingredient-bun",
         "type": "bun"
       },
       {
         "_id": "643d69a5c3f7b9001cfa093e",
-        "name": "Филе Люминесцентного тетраодонтимформа",
+        "name": "ingredient-main",
         "type": "main"
       },
-      {
-        "_id": "643d69a5c3f7b9001cfa094a",
-        "name": "Сыр с астероидной плесенью",
-        "type": "main"
-      },
+
       {
         "_id": "643d69a5c3f7b9001cfa0945",
-        "name": "Соус с шипами Антарианского плоскоходца",
+        "name": "ingredient-sauce",
         "type": "sauce"
       },
       {
         "_id": "643d69a5c3f7b9001cfa093c",
-        "name": "Краторная булка N-200i",
+        "name": "ingredient-bun",
         "type": "bun"
       }
     ],
@@ -37,7 +33,7 @@
       "updatedAt": "2025-04-16T15:18:43.013Z"
     },
     "status": "done",
-    "name": "Краторный астероидный люминесцентный антарианский бургер",
+    "name": "test burger",
     "createdAt": "2025-04-23T10:25:32.279Z",
     "updatedAt": "2025-04-23T10:25:33.045Z",
     "number": 75354,

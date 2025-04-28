@@ -19,11 +19,11 @@ describe('Burger Constructor Page', () => {
     cy.visit('/');
 
     cy.wait('@getIngredients');
-    cy.get('[data-cy="ingredients"]').should('have.length.at.least', 3);
+
     cy.wait('@getUser');
   });
 
-  it('Modal Window: открытие и закрытие по кнопке', () => {
+  it('Ingredient modal window: открытие и закрытие по кнопке', () => {
     openModal();
     checkModalVisibility(true);
 
@@ -31,89 +31,49 @@ describe('Burger Constructor Page', () => {
     checkModalVisibility(false);
   });
 
-  it('Modal Window: открытие и закрытие по оверлею', () => {
+  it('Ingredient modal window: открытие и закрытие по оверлею', () => {
     openModal();
     checkModalVisibility(true);
     cy.get("[data-cy='modalOverlay']").click({ force: true });
     checkModalVisibility(false);
   });
-});
 
-/*
-  it('Добавление булки и начинки в конструктор', () => {
-    // Проверяем начальное состояние
+  it('Добавление ингредиентов в конструктор, создание заказа', () => {
+    cy.get('[data-cy="ingredient-bun"]').should('have.length.at.least', 1);
+    cy.get('[data-cy="ingredient-main"]').should('have.length.at.least', 1);
+    cy.get('[data-cy="ingredient-sauce"]').should('have.length.at.least', 1);
+
     cy.get('[data-cy="no-bun-top"]').should('exist');
-    cy.get('[data-cy="no-bun-bottom"]').should('exist');
     cy.get('[data-cy="no-fillings"]').should('exist');
+    cy.get('[data-cy="no-bun-bottom"]').should('exist');
 
-    // Добавляем  булку и начинки
-    cy.get('[data-cy="ingredient-bun"]').first().click();
-    cy.get('[data-cy="ingredient-main"]').first().click();
-    cy.get('[data-cy="ingredient-sauce"]').first().click();
+    cy.get('[data-cy="ingredients-bun"]').find('button').click();
+    cy.get('[data-cy="ingredients-main"]').find('button').click();
+    cy.get('[data-cy="ingredients-sauce"]').find('button').click();
 
-    // Проверяем
-    cy.get('[data-cy="constructor"]').within(() => {
-      cy.get('[data-cy="constructor-bun-top"]').should('exist');
-      cy.get('[data-cy="constructor-bun-bottom"]').should('exist');
-      cy.get('[data-cy="constructor-fillings"]')
-        .children()
-        .should('have.length', 2);
-    });
-  });
+    cy.get('[data-cy="bun-top"]').should('exist');
+    cy.get('[data-cy="fillings"]').should('exist');
+    cy.get('[data-cy="bun-bottom"]').should('exist');
 
-  it('Открытие и закрытие модального окна ингредиента', () => {
-    // Сохраняем имя первой начинки
-    cy.get('[data-cy="ingredient-main"]').first().as('firstMain');
-    cy.get('@firstMain')
-      .find('p.text_type_main-default')
-      .invoke('text')
-      .then((cardName) => {
-        // Открываем модалку
-        cy.get('@firstMain').find('img').click();
+    cy.get('[data-cy="burgerConstructor"]')
+      .contains('button', 'Оформить заказ')
+      .click();
 
-        // Проверяем, что модалка видима и содержит то же имя
-        cy.get('[data-cy="modal-window"]').should('be.visible');
-        cy.get('[data-cy="ingredient-name"]').should('contain', cardName);
-
-        // Закрываем крестиком
-        cy.get('[data-cy="modal-window"] button').click();
-        cy.get('[data-cy="modal-window"]').should('not.exist');
-
-        // Открываем вновь и закрываем по оверлею
-        cy.get('@firstMain').find('img').click();
-        cy.get('[data-cy="modal-window"]').should('be.visible');
-        cy.get('[data-cy="modal-overlay"]').click({ force: true });
-        cy.get('[data-cy="modal-window"]').should('not.exist');
-      });
-  });
-
-  it('Процесс создания заказа и очистка конструктора', () => {
-    // Добавляем булку и начинку
-    cy.get('[data-cy="ingredient-bun"]').first().click();
-    cy.get('[data-cy="ingredient-main"]').first().click();
-
-    // Оформляем заказ
-    cy.get('[data-cy="order-button"]').should('not.be.disabled').click();
-
-    // Ждём POST и проверяем модалку с номером
     cy.wait('@postOrder');
-    cy.get('[data-cy="modal-window"]').should('be.visible');
 
-    // Номер совпадает с мокой
+    cy.get('[data-cy="modalWindow"]').should('be.visible');
+
     cy.fixture('order.json')
       .its('order.number')
-      .then((num) => {
-        cy.get('[data-cy="order-number"]').should('contain', num);
+      .then((orderNumber) => {
+        cy.get('[data-cy="orderNumber"]').should('contain', orderNumber);
       });
 
-    // Закрываем и проверяем очистку
-    cy.get('[data-cy="modal-overlay"]').click({ force: true });
-    cy.get('[data-cy="modal-window"]').should('not.exist');
+    cy.get('[data-cy="modalOverlay"]').click({ force: true });
+    cy.get('[data-cy="modalWindow"]').should('not.exist');
 
     cy.get('[data-cy="no-bun-top"]').should('exist');
     cy.get('[data-cy="no-bun-bottom"]').should('exist');
     cy.get('[data-cy="no-fillings"]').should('exist');
   });
- 
 });
- */
