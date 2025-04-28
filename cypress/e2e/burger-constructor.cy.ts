@@ -15,7 +15,7 @@ describe('Burger Constructor Page', () => {
     window.localStorage.setItem('refreshToken', 'fake-refresh-token');
     cy.setCookie('accessToken', 'fake-access-token');
 
-    // 4) Заходим на главную
+    // 4) Заходим на главную.
     cy.visit('http://localhost:4000/');
 
     // 5) Ждём, пока из мока придут данные
