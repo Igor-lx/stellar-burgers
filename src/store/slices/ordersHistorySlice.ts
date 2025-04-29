@@ -50,4 +50,3 @@ export const ordersHistorySlice = createSlice({
 });
 
 export const { selectOrdersHistory } = ordersHistorySlice.selectors;
-export default ordersHistorySlice.reducer;

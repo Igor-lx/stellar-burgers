@@ -12,12 +12,13 @@ export const ProtectedRoute: FC<ProtectedRouteProps> = ({
   children,
   publicRoute: anonymous = false
 }) => {
-  const isLoggedIn = useAppSelector((store) => store.user.ifAuth);
-  const isLoading = useAppSelector((store) => store.user.loading);
+  const isLoggedIn = useAppSelector((state) => state.user.ifAuth);
+  const isLoading = useAppSelector((state) => state.user.loading);
+  const isAuthChecked = useAppSelector((state) => state.user.userChecked);
   const location = useLocation();
   const from = location.state?.from || '/';
 
-  if (isLoading) {
+  if (!isAuthChecked || isLoading) {
     return <Preloader />;
   }
 
